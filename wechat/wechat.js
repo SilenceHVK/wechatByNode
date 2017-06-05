@@ -6,6 +6,69 @@ const crypto = require('crypto'), //引入加密模块
           fs = require('fs'), //引入 fs 模块
 accessTokenJson = require('./access_token'); //引入本地存储的 access_token
 
+const urltil = require('url');
+
+
+var menu = {
+    "button": [
+        {
+            "name": "扫码", 
+            "sub_button": [
+                {
+                    "type": "scancode_waitmsg", 
+                    "name": "扫码带提示", 
+                    "key": "rselfmenu_0_0", 
+                    "sub_button": [ ]
+                }, 
+                {
+                    "type": "scancode_push", 
+                    "name": "扫码推事件", 
+                    "key": "rselfmenu_0_1", 
+                    "sub_button": [ ]
+                }
+            ]
+        }, 
+        {
+            "name": "发图", 
+            "sub_button": [
+                {
+                    "type": "pic_sysphoto", 
+                    "name": "系统拍照发图", 
+                    "key": "rselfmenu_1_0", 
+                   "sub_button": [ ]
+                 }, 
+                {
+                    "type": "pic_photo_or_album", 
+                    "name": "拍照或者相册发图", 
+                    "key": "rselfmenu_1_1", 
+                    "sub_button": [ ]
+                }, 
+                {
+                    "type": "pic_weixin", 
+                    "name": "微信相册发图", 
+                    "key": "rselfmenu_1_2", 
+                    "sub_button": [ ]
+                }
+            ]
+        }, 
+        {
+            "name": "发送位置", 
+            "type": "location_select", 
+            "key": "rselfmenu_2_0"
+        },
+        {
+           "type": "media_id", 
+           "name": "图片", 
+           "media_id": "MEDIA_ID1"
+        }, 
+        {
+           "type": "view_limited", 
+           "name": "图文消息", 
+           "media_id": "MEDIA_ID2"
+        }
+    ]
+}
+
 //构建 WeChat 对象 即 js中 函数就是对象
 var WeChat = function(config){
     //设置 WeChat 对象属性 config
@@ -41,13 +104,46 @@ var WeChat = function(config){
             });
         });
     }
+
+    //用于处理 https Post请求方法
+    this.requestPost = function(url,data){
+        return new Promise(function(resolve,reject){
+            var urlData = urltil.parse(url);
+            var options={
+                hostname: urlData.hostname,
+                path: urlData.path,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Length': Buffer.byteLength(data,'utf-8')
+                }
+            };
+
+            var req = https.request(options,function(res){
+                var buffer = [],result = '';
+                res.on('data',function(data){
+                    buffer.push(data);
+                });
+
+                res.on('end',function(){
+                    result = Buffer.concat(buffer).toString('utf-8');
+                    resolve(result);
+                })
+            }).on('error',function(err){
+                console.log(err);
+                reject(err);
+            });
+            req.write(JSON.parse(data));
+            req.end();
+        });
+    }
 }
 
 /**
  * 微信接入验证
  */
 WeChat.prototype.auth = function(req,res){
-     //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
+        //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
         var signature = req.query.signature,//微信加密签名
             timestamp = req.query.timestamp,//时间戳
                 nonce = req.query.nonce,//随机数
@@ -83,17 +179,17 @@ WeChat.prototype.getAccessToken = function(){
         //判断 本地存储的 access_token 是否有效
         if(accessTokenJson.access_token === "" || accessTokenJson.expires_time < currentTime){
             that.requestGet(url).then(function(data){
-                data = JSON.parse(data); 
-                if(data.indexOf(errcode) < 0){
-                    accessTokenJson.access_token = data.access_token;
-                    accessTokenJson.expires_time = new Date().getTime() + (parseInt(data.expires_in) - 200) * 1000;
+                var result = JSON.parse(data); 
+                if(data.indexOf("errcode") < 0){
+                    accessTokenJson.access_token = result.access_token;
+                    accessTokenJson.expires_time = new Date().getTime() + (parseInt(result.expires_in) - 200) * 1000;
                     //更新本地存储的
                     fs.writeFile('./wechat/access_token.json',JSON.stringify(accessTokenJson));
                     //将获取后的 access_token 返回
                     resolve(accessTokenJson.access_token);
                 }else{
                     //将错误返回
-                    resolve(data);
+                    resolve(result);
                 } 
             });
         }else{
@@ -102,6 +198,7 @@ WeChat.prototype.getAccessToken = function(){
         }
     });
 }
+
 
 //暴露可供外部访问的接口
 module.exports = WeChat;
