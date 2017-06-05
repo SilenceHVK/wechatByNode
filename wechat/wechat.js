@@ -9,65 +9,15 @@ accessTokenJson = require('./access_token'); //引入本地存储的 access_toke
 const urltil = require('url');
 
 
-var menu = {
-    "button": [
-        {
-            "name": "扫码", 
-            "sub_button": [
-                {
-                    "type": "scancode_waitmsg", 
-                    "name": "扫码带提示", 
-                    "key": "rselfmenu_0_0", 
-                    "sub_button": [ ]
-                }, 
-                {
-                    "type": "scancode_push", 
-                    "name": "扫码推事件", 
-                    "key": "rselfmenu_0_1", 
-                    "sub_button": [ ]
-                }
-            ]
-        }, 
-        {
-            "name": "发图", 
-            "sub_button": [
-                {
-                    "type": "pic_sysphoto", 
-                    "name": "系统拍照发图", 
-                    "key": "rselfmenu_1_0", 
-                   "sub_button": [ ]
-                 }, 
-                {
-                    "type": "pic_photo_or_album", 
-                    "name": "拍照或者相册发图", 
-                    "key": "rselfmenu_1_1", 
-                    "sub_button": [ ]
-                }, 
-                {
-                    "type": "pic_weixin", 
-                    "name": "微信相册发图", 
-                    "key": "rselfmenu_1_2", 
-                    "sub_button": [ ]
-                }
-            ]
-        }, 
-        {
-            "name": "发送位置", 
-            "type": "location_select", 
-            "key": "rselfmenu_2_0"
-        },
-        {
-           "type": "media_id", 
-           "name": "图片", 
-           "media_id": "MEDIA_ID1"
-        }, 
-        {
-           "type": "view_limited", 
-           "name": "图文消息", 
-           "media_id": "MEDIA_ID2"
-        }
-    ]
-}
+var menu =  {
+     "button":[
+     {	
+          "type":"scancode_push",
+          "name":"扫一扫",
+          "key":"V1001_TODAY_MUSIC"
+      }
+      ]
+    };
 
 //构建 WeChat 对象 即 js中 函数就是对象
 var WeChat = function(config){
@@ -124,7 +74,6 @@ var WeChat = function(config){
                 res.on('data',function(data){
                     buffer.push(data);
                 });
-
                 res.on('end',function(){
                     result = Buffer.concat(buffer).toString('utf-8');
                     resolve(result);
@@ -133,7 +82,7 @@ var WeChat = function(config){
                 console.log(err);
                 reject(err);
             });
-            req.write(JSON.parse(data));
+            req.write(data);
             req.end();
         });
     }
@@ -143,7 +92,18 @@ var WeChat = function(config){
  * 微信接入验证
  */
 WeChat.prototype.auth = function(req,res){
-        //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
+
+    var that = this;
+
+// this.getAccessToken().then(function(data){
+//     var url = util.format(that.apiURL.createMenu,that.apiDomain,data);
+//     console.log(url);
+//     console.log(JSON.stringify(menu));
+//     that.requestPost(url,JSON.stringify(menu)).then(function(data){
+//         console.log(data);
+//     });
+// });
+     //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
         var signature = req.query.signature,//微信加密签名
             timestamp = req.query.timestamp,//时间戳
                 nonce = req.query.nonce,//随机数
