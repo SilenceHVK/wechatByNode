@@ -11,11 +11,11 @@ const urltil = require('url');
 
 var menu =  {
      "button":[
-     {	
-          "type":"scancode_push",
-          "name":"扫一扫",
-          "key":"V1001_TODAY_MUSIC"
-      }
+        {	
+            "type":"scancode_push",
+            "name":"扫一扫",
+            "key":"V1001_TODAY_MUSIC"
+        }
       ]
     };
 
@@ -68,7 +68,6 @@ var WeChat = function(config){
                     'Content-Length': Buffer.byteLength(data,'utf-8')
                 }
             };
-
             var req = https.request(options,function(res){
                 var buffer = [],result = '';
                 res.on('data',function(data){
@@ -92,18 +91,7 @@ var WeChat = function(config){
  * 微信接入验证
  */
 WeChat.prototype.auth = function(req,res){
-
-    var that = this;
-
-// this.getAccessToken().then(function(data){
-//     var url = util.format(that.apiURL.createMenu,that.apiDomain,data);
-//     console.log(url);
-//     console.log(JSON.stringify(menu));
-//     that.requestPost(url,JSON.stringify(menu)).then(function(data){
-//         console.log(data);
-//     });
-// });
-     //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
+        //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
         var signature = req.query.signature,//微信加密签名
             timestamp = req.query.timestamp,//时间戳
                 nonce = req.query.nonce,//随机数
