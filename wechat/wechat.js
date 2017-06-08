@@ -6,7 +6,9 @@ const crypto = require('crypto'), //引入加密模块
           fs = require('fs'), //引入 fs 模块
       urltil = require('url'),//引入 url 模块
 accessTokenJson = require('./access_token'), //引入本地存储的 access_token
-      menus  = require('./menus'); //引入微信菜单配置
+      menus  = require('./menus'), //引入微信菜单配置
+ parseString = require('xml2js').parseString,//引入xml2js包
+         msg = require('./msg');//引入消息处理模块
 
 
 //构建 WeChat 对象 即 js中 函数就是对象
@@ -93,16 +95,16 @@ var WeChat = function(config){
  */
 WeChat.prototype.auth = function(req,res){
 
-    var that = this;
-    this.getAccessToken().then(function(data){
-        //格式化请求连接
-        var url = util.format(that.apiURL.createMenu,that.apiDomain,data);
-        //使用 Post 请求创建微信菜单
-        that.requestPost(url,JSON.stringify(menus)).then(function(data){
-            //讲结果打印
-            console.log(data);
-        });
-    });
+    // var that = this;
+    // this.getAccessToken().then(function(data){
+    //     //格式化请求连接
+    //     var url = util.format(that.apiURL.createMenu,that.apiDomain,data);
+    //     //使用 Post 请求创建微信菜单
+    //     that.requestPost(url,JSON.stringify(menus)).then(function(data){
+    //         //讲结果打印
+    //         console.log(data);
+    //     });
+    // });
 
         //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
         var signature = req.query.signature,//微信加密签名
@@ -160,6 +162,81 @@ WeChat.prototype.getAccessToken = function(){
     });
 }
 
+
+/**
+ * 微信消息
+ */
+WeChat.prototype.handleMsg = function(req,res){
+    var buffer = [];
+    //监听 data 事件 用于接收数据
+    req.on('data',function(data){
+        buffer.push(data);
+    });
+    //监听 end 事件 用于处理接收完成的数据
+    req.on('end',function(){
+        var msgXml = Buffer.concat(buffer).toString('utf-8');
+        //解析xml
+        parseString(msgXml,{explicitArray : false},function(err,result){
+            if(!err){
+                   result = result.xml;
+                   var toUser = result.ToUserName; //接收方微信
+                   var fromUser = result.FromUserName;//发送仿微信
+
+                   //判断消息类型
+                   if(result.MsgType.toLowerCase() === "event"){
+                        //判断事件类型
+                        switch(result.Event.toLowerCase()){
+                            case 'subscribe':
+                                    //回复消息
+                                    var content = "欢迎关注 hvkcoder 公众号，一起斗图吧。回复以下数字：\n";
+                                        content += "1.你是谁\n";
+                                        content += "2.关于Node.js\n";
+                                        content += "回复 “文章”  可以得到图文推送哦~\n";
+                                    res.send(msg.txtMsg(fromUser,toUser,content));
+                                    break;
+                            case 'click':
+                                        var contentArr = [
+                                            {Title:"Node.js 微信自定义菜单",Description:"使用Node.js实现自定义微信菜单",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72868520"},
+                                            {Title:"Node.js access_token的获取、存储及更新",Description:"Node.js access_token的获取、存储及更新",PicUrl:"http://img.blog.csdn.net/20170528151333883?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72783631"},
+                                            {Title:"Node.js 接入微信公众平台开发",Description:"Node.js 接入微信公众平台开发",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72765279"}
+                                        ];
+                                    //回复图文消息
+                                    res.send(msg.graphicMsg(fromUser,toUser,contentArr));
+                                    break;
+                        }
+                   }else{
+                       //判断消息类型为 文本消息
+                       if(result.MsgType.toLowerCase() === "text"){
+                           //根据消息内容返回消息信息
+                           switch(result.Content){
+                               case '1':
+                                        res.send(msg.txtMsg(fromUser,toUser,'Hello ！我的英文名字叫 H-VK'));
+                                    break;
+                               case '2':
+                                        res.send(msg.txtMsg(fromUser,toUser,'Node.js是一个开放源代码、跨平台的JavaScript语言运行环境，采用Google开发的V8运行代码,使用事件驱动、非阻塞和异步输入输出模型等技术来提高性能，可优化应用程序的传输量和规模。这些技术通常用于数据密集的事实应用程序'));
+                                    break;
+                               case '文章':
+                                      var contentArr = [
+                                            {Title:"Node.js 微信自定义菜单",Description:"使用Node.js实现自定义微信菜单",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72868520"},
+                                            {Title:"Node.js access_token的获取、存储及更新",Description:"Node.js access_token的获取、存储及更新",PicUrl:"http://img.blog.csdn.net/20170528151333883?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72783631"},
+                                            {Title:"Node.js 接入微信公众平台开发",Description:"Node.js 接入微信公众平台开发",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72765279"}
+                                        ];
+                                        //回复图文消息
+                                        res.send(msg.graphicMsg(fromUser,toUser,contentArr));
+                                    break;
+                                default :
+                                         res.send(msg.txtMsg(fromUser,toUser,'没有这个选项哦'));
+                                    break;
+                           }
+                       }
+                   }
+            }else{
+                 //打印错误信息
+                console.log(err);
+            }
+        })
+    });
+}
 
 //暴露可供外部访问的接口
 module.exports = WeChat;
