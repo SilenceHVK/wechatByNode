@@ -5,10 +5,6 @@ const express = require('express'), //express 框架
 var parseString = require('xml2js').parseString;     
 
 
-var crypto = require("crypto");
-
-
-
 var app = express();//实例express框架
 
 var wechatApp = new wechat(config); //实例wechat 模块
