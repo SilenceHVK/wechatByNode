@@ -1,7 +1,8 @@
 'use strict' //设置为严格模式
 
 const crypto = require('crypto'),//引入加密模块
-    buildXML = new require('xml2js').Builder({rootName:'xml',cdata:true,headless:true,renderOpts :{indent:' ',pretty:'true'}});
+  XMLParser = require('xml2js'),
+    buildXML = new XMLParser.Builder({rootName:'xml',cdata:true,headless:true,renderOpts :{indent:' ',pretty:'true'}});
 
 /**
  * 构建 微信消息加解密对象
@@ -80,25 +81,23 @@ CryptoGraphy.prototype.decryptMsg = function (encryptMsg){
  */
 CryptoGraphy.prototype.encryptMsg = function(xmlMsg){
 
-    //随机生成16个字符串
-    var random16 = crypto.randomBytes(8).toString('hex');
-    var txt = new Buffer(xmlMsg);
-    var pack = encode(20 + text.length + this.appID.length);
-    //补位
-    var pad = new Buffer(4);
-    pad.writeUInt32BE(txt.length,0);
-    var content = random16 + pad.toString('binary') + txt.toString('binary') + this.appID + pack;
-    //实例 AES 加密对象
+var text = new Buffer(xmlMsg),
+			pad = enclen(text.length);
+		var pack = encode(20 + text.length + this.appID.length),
+			 random =crypto.randomBytes(8).toString('hex');
+		var content = random + pad + text.toString('binary') + this.appID + pack;
+    // //实例 AES 加密对象
     var cipheriv = crypto.createCipheriv(this.aesModel,this.encodingAESKey,this.iv);
     cipheriv.setAutoPadding(false);
-    var encryptedMsg = Buffer.concat([cipheriv.update('binary'),cipheriv.final()]).toString('base64');
+    var encryptedMsg = Buffer.concat([cipheriv.update(content,'binary'),cipheriv.final()]).toString('base64');
     var msgSignature = this.getMsgSignature(encryptedMsg);
-    return buildXML({
+    return buildXML.buildObject({
         Encrypt:encryptedMsg,
         MsgSignature:msgSignature,
         TimeStamp:this.timestamp,
         Nonce :this.nonce
     });
+
 }
 
 /**
@@ -130,6 +129,13 @@ var encode = function(text_length){
 	var pad = String.fromCharCode(amount_to_pad), s = [];
 	for (var i=0; i<amount_to_pad; i++) s.push(pad);
 	return s.join('');
+}
+
+var enclen = function(len)
+{
+		var buf = new Buffer(4);
+		buf.writeUInt32BE(len);
+		return buf.toString('binary');
 }
 
 
