@@ -1,8 +1,8 @@
 'use strict' //设置为严格模式
 
 const crypto = require('crypto'),//引入加密模块
-  XMLParser = require('xml2js'),
-    buildXML = new XMLParser.Builder({rootName:'xml',cdata:true,headless:true,renderOpts :{indent:' ',pretty:'true'}});
+  xmlParser = require('xml2js'),
+    buildXML = new xmlParser.Builder({rootName:'xml',cdata:true,headless:true,renderOpts :{indent:' ',pretty:'true'}}); //用于构建 xml 结构
 
 /**
  * 构建 微信消息加解密对象
@@ -27,7 +27,6 @@ var CryptoGraphy = function(config,req){
     //设置 CryptoGraphy 对象属性 timestamp
     this.nonce = req.query.nonce;
 }
-
 
 /**
  * 解析 XML 转为 JSON
@@ -65,39 +64,49 @@ CryptoGraphy.prototype.decryptMsg = function (encryptMsg){
     if(this.msgSignature  !== tempSignature){
         throw new Error('msgSignature is not invalid')
     }
-    //实例 AES 解密对象
+     //实例 AES 解密对象
     var deCipheriv = crypto.createDecipheriv(this.aesModel,this.encodingAESKey,this.iv);
+    //设置自定填充数据为 false
     deCipheriv.setAutoPadding(false);
     //对密文解密对密文解密 并去除前 16 个随机字符串
     var deEncryptedMsg = Buffer.concat([deCipheriv.update(encryptMsg,'base64'),deCipheriv.final()]).toString('utf8');
-   	var pad = deEncryptedMsg.charCodeAt(deEncryptedMsg.length - 1);
+    //获取填充字符串的位置
+    var pad = deEncryptedMsg.charCodeAt(deEncryptedMsg.length - 1);
+    //对微信消息进行处理
     deEncryptedMsg = deEncryptedMsg.slice(20, -pad).replace(/<\/xml>.*/,'</xml>');
+    //讲解密后的XML 转为 JSON 对象
     return this.parseXmlToJSON(deEncryptedMsg);
 }
 
 /**
  * 微信消息加密
- * @
+ * @param {String} xmlMsg 明文消息
  */
 CryptoGraphy.prototype.encryptMsg = function(xmlMsg){
-
-var text = new Buffer(xmlMsg),
-			pad = enclen(text.length);
-		var pack = encode(20 + text.length + this.appID.length),
-			 random =crypto.randomBytes(8).toString('hex');
-		var content = random + pad + text.toString('binary') + this.appID + pack;
-    // //实例 AES 加密对象
+    //声明 16位的随机字符串
+    var random =crypto.randomBytes(8).toString('hex');
+    var text = new Buffer(xmlMsg);
+    var buf = new Buffer(4);
+    buf.writeUInt32BE(text.length);
+    //进行PKCS7补位
+    var pack = KCS7Encoder(20 + text.length + this.appID.length);
+    //拼接要加密的字符串
+    var content = random + buf.toString('binary') + text.toString('binary') + this.appID + pack;
+    //实例 AES 加密对象
     var cipheriv = crypto.createCipheriv(this.aesModel,this.encodingAESKey,this.iv);
+    //设置自定填充数据为 false
     cipheriv.setAutoPadding(false);
+    //对明文加密
     var encryptedMsg = Buffer.concat([cipheriv.update(content,'binary'),cipheriv.final()]).toString('base64');
+    //获取认证签名
     var msgSignature = this.getMsgSignature(encryptedMsg);
+    //返回XML结果
     return buildXML.buildObject({
         Encrypt:encryptedMsg,
         MsgSignature:msgSignature,
         TimeStamp:this.timestamp,
         Nonce :this.nonce
-    });
-
+    });  
 }
 
 /**
@@ -117,7 +126,11 @@ CryptoGraphy.prototype.getMsgSignature = function(encryptedMsg){
 }
 
 
-var encode = function(text_length){
+/**
+ * PKCS7补位 算法
+ * @param {Number} text_length  字符串长度
+ */
+var KCS7Encoder = function(text_length){
     var block_size = 32
     // 计算需要填充的位数
 	var amount_to_pad = block_size - (text_length % block_size);
@@ -130,14 +143,6 @@ var encode = function(text_length){
 	for (var i=0; i<amount_to_pad; i++) s.push(pad);
 	return s.join('');
 }
-
-var enclen = function(len)
-{
-		var buf = new Buffer(4);
-		buf.writeUInt32BE(len);
-		return buf.toString('binary');
-}
-
 
 module.exports = CryptoGraphy;
 

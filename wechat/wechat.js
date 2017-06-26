@@ -204,7 +204,7 @@ WeChat.prototype.handleMsg = function(req,res){
                 }
                 var toUser = result.ToUserName; //接收方微信
                 var fromUser = result.FromUserName;//发送仿微信
-                var reportMsg = ""; //声明回复消息的变量
+                var reportMsg = ""; //声明回复消息的变量   
 
                 //判断消息类型
                 if(result.MsgType.toLowerCase() === "event"){
@@ -229,7 +229,7 @@ WeChat.prototype.handleMsg = function(req,res){
                         break;
                     }
                 }else{
-                    //判断消息类型为 文本消息
+                     //判断消息类型为 文本消息
                     if(result.MsgType.toLowerCase() === "text"){
                         //根据消息内容返回消息信息
                         switch(result.Content){
@@ -258,6 +258,7 @@ WeChat.prototype.handleMsg = function(req,res){
                 reportMsg = req.query.encrypt_type == 'aes' ? cryptoGraphy.encryptMsg(reportMsg) : reportMsg ;
                 //返回给微信服务器
                 res.send(reportMsg);
+
             }else{
                 //打印错误
                 console.log(err);
