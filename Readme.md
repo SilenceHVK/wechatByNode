@@ -1,6 +1,6 @@
 Node.js 微信公众号开发
 =====================
-
+img[https://img.shields.io/badge/express-4.15.3-blue.svg]
 # 目录结构
 <pre>
 .
