@@ -1,4 +1,4 @@
-# Node.js 微信公众号开发 
+Node.js 微信公众号开发 
 ============================
 
 ![node version](https://img.shields.io/badge/node-7.5.0-brightgreen.svg)
