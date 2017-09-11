@@ -1,6 +1,6 @@
 Node.js 微信公众号开发
 =====================
-[![npm (scoped)](https://img.shields.io/npm/v/@cycle/core.svg?style=flat-square)](http://www.baidu.com)
+[![npm (scoped)](https://img.shields.io/npm/v/@cycle/core.svg?style=flat-square)]
 
 # 目录结构
 <pre>
