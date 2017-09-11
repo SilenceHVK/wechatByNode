@@ -1,6 +1,10 @@
 Node.js 微信公众号开发
 =====================
+![node version](https://img.shields.io/badge/node-7.5.0-brightgreen.svg)
+![npm version](https://img.shields.io/badge/npm-4.1.2-brightgreen.svg)
 ![express version](https://img.shields.io/badge/express-4.15.3-blue.svg)
+![xml2js](https://img.shields.io/badge/xml2js-0.4.17-orange.svg)
+
 # 目录结构
 <pre>
 .
