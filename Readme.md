@@ -4,6 +4,7 @@ Node.js 微信公众号开发
 ![npm version](https://img.shields.io/badge/npm-4.1.2-brightgreen.svg)
 ![express version](https://img.shields.io/badge/express-4.15.3-blue.svg)
 ![xml2js](https://img.shields.io/badge/xml2js-0.4.17-orange.svg)
+![](https://img.shields.io/github/stars/badges/shields.svg?style=social&label=Star)
 
 # 目录结构
 <pre>
