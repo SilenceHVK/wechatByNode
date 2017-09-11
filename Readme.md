@@ -1,7 +1,9 @@
-Node.js 微信公众号开发
-=====================
+Node.js 微信公众号开发 
 ![git start](https://img.shields.io/github/stars/silencehvk/wechatbynode.svg?style=social&label=Star)
 ![git forks](https://img.shields.io/github/forks/silencehvk/wechatbynode.svg?style=social&label=Fork)
+[![git iss](https://img.shields.io/github/issues/silencehvk/wechatbynode.svg?style=social&label=Issues)](https://github.com/SilenceHVK/wechatByNode/issues)
+=====================
+
 ![node version](https://img.shields.io/badge/node-7.5.0-brightgreen.svg)
 ![npm version](https://img.shields.io/badge/npm-4.1.2-brightgreen.svg)
 ![express version](https://img.shields.io/badge/express-4.15.3-blue.svg)
