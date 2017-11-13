@@ -5,7 +5,7 @@
 ![express version](https://img.shields.io/badge/express-4.15.3-blue.svg)
 ![xml2js](https://img.shields.io/badge/xml2js-0.4.17-orange.svg)
 
-# 目录结构
+# 项目结构
 <pre>
 .
 ├── README.md           
