@@ -12,7 +12,6 @@
 ├── package.json               // 构建项目与工具包依赖
 ├── config.json               // 项目配置文件
 ├── app.js                   // 项目启动入口
-├── node_modules            // 工具包模块
 ├── wechat                 // 微信模块文件夹
 │   ├── access_token.json // accessToken存储文件
 │   ├── menus.json       // 菜单配置文件
