@@ -108,16 +108,16 @@ var WeChat = function(config){
  */
 WeChat.prototype.auth = function(req,res){
 
-    // var that = this;
-    // this.getAccessToken().then(function(data){
-    //     //格式化请求连接
-    //     var url = util.format(that.apiURL.createMenu,that.apiDomain,data);
-    //     //使用 Post 请求创建微信菜单
-    //     that.requestPost(url,JSON.stringify(menus)).then(function(data){
-    //         //讲结果打印
-    //         console.log(data);
-    //     });
-    // });
+    var that = this;
+    this.getAccessToken().then(function(data){
+   //格式化请求连接
+   var url = util.format(that.apiURL.createMenu,that.apiDomain,data);
+       //使用 Post 请求创建微信菜单
+       that.requestPost(url,JSON.stringify(menus)).then(function(data){
+              //将结果打印
+              console.log(data);
+       });
+   });
 
         //1.获取微信服务器Get请求的参数 signature、timestamp、nonce、echostr
         var signature = req.query.signature,//微信加密签名
