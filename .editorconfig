@@ -1,0 +1,22 @@
+# http://editorconfig.org/
+# top-most EditorConfig file
+root = true
+
+# match all file
+[*]
+# control the character set
+charset = utf-8
+
+# space indentation
+indent_style = space
+indent_size = 2
+
+# tab indentation
+indent_style = tab
+indent_size = 2
+
+# control line breaks are represented
+end_of_line = lf
+
+# remove any whitespace characters preceding newline characters
+trim_trailing_whitespace = true

@@ -1,14 +1,14 @@
 # Node.js 微信公众号开发 ![git start](https://img.shields.io/github/stars/silencehvk/wechatbynode.svg?style=social&label=Star) ![git fork](https://img.shields.io/github/forks/silencehvk/wechatbynode.svg?style=social&label=Fork) [![](https://img.shields.io/github/issues/silencehvk/wechatbynode.svg?style=social&label=Issues)](https://github.com/silencehvk/wechatbynode/issues) [![](https://img.shields.io/github/release/silencehvk/wechatbynode.svg?style=social&label=Releases)](https://github.com/silencehvk/wechatbynode/releases)
 
-![node version](https://img.shields.io/badge/node-7.5.0-brightgreen.svg)
-![npm version](https://img.shields.io/badge/npm-4.1.2-brightgreen.svg)
+![node version](https://img.shields.io/badge/node-8.9.0-brightgreen.svg)
+![npm version](https://img.shields.io/badge/npm-6.8.0-brightgreen.svg)
 ![express version](https://img.shields.io/badge/express-4.15.3-blue.svg)
 ![xml2js](https://img.shields.io/badge/xml2js-0.4.17-orange.svg)
 
 # 项目结构
 <pre>
 .
-├── README.md           
+├── README.md
 ├── package.json               // 构建项目与工具包依赖
 ├── config.json               // 项目配置文件
 ├── app.js                   // 项目启动入口
@@ -33,7 +33,7 @@
     ```
 
  2. 打开项目配置文件 config.json
- 
+
     ![config.json](http://img.blog.csdn.net/20170609144432242?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
     修改文件的 token、appID 以及 appScrect 配置参数。其中 token、appID 与 appScrect 两个参数位于 [微信公众平台](https://mp.weixin.qq.com/) 左侧菜单的基本配置中
@@ -76,4 +76,3 @@
     ![微信接收普通消息](http://img.blog.csdn.net/20170608183936497?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
     ![微信接收事件消息](http://img.blog.csdn.net/20170608160434723?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
-

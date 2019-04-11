@@ -1,13 +1,7 @@
 {
-  "name": "wechat",
+  "name": "wechatbynode",
   "version": "1.0.0",
-  "description": "使用 Node.js开发微信",
-  "main": "app.js",
-  "dependencies": {
-    "express": "^4.15.3",
-    "xml2js": "^0.4.17"
-  },
-  "devDependencies": {},
+  "description": "使用 node.js 开发微信公众平台",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,8 +9,8 @@
     "type": "git",
     "url": "git+https://github.com/SilenceHVK/wechatByNode.git"
   },
-  "author": "H-VK",
-  "license": "ISC",
+  "author": "hvkcoder",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/SilenceHVK/wechatByNode/issues"
   },
